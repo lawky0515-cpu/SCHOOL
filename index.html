@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>学生荣誉榜</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">School Honor Board</p>
+        <h1>学生荣誉榜</h1>
+      </div>
+      <button class="ghost-button" id="backButton" type="button" hidden>返回主页</button>
+    </header>
+
+    <main>
+      <section class="home-view" id="homeView">
+        <section class="summary" aria-label="获奖总数">
+          <article class="medal gold">
+            <span>金奖</span>
+            <strong id="goldCount">0</strong>
+          </article>
+          <article class="medal silver">
+            <span>银奖</span>
+            <strong id="silverCount">0</strong>
+          </article>
+          <article class="medal bronze">
+            <span>铜奖</span>
+            <strong id="bronzeCount">0</strong>
+          </article>
+          <article class="medal fourth">
+            <span>第四名</span>
+            <strong id="fourthCount">0</strong>
+          </article>
+          <article class="medal fifth">
+            <span>第五名</span>
+            <strong id="fifthCount">0</strong>
+          </article>
+        </section>
+
+        <section>
+          <div class="section-heading">
+            <h2>获奖学生</h2>
+            <p>点击学生名字或卡片查看详细奖项</p>
+          </div>
+          <div class="student-grid" id="studentGrid"></div>
+        </section>
+      </section>
+
+      <section class="detail-view" id="detailView" hidden>
+        <article class="profile" id="studentProfile"></article>
+        <section class="award-list" id="awardList"></section>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
