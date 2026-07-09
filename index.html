@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>学生荣誉榜</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="title-block">
+        <img class="title-image" src="assets/honor-board-title.jpg" alt="板督中华公学 SJK (C) CHUNG HUA PANTU 学生荣誉榜" />
+      </div>
+      <button class="ghost-button" id="backButton" type="button" hidden>返回主页</button>
+    </header>
+
+    <main>
+      <section class="home-view" id="homeView">
+        <section class="summary" aria-label="获奖总数">
+          <button class="medal fourth" type="button" data-rank="第四">
+            <span>第四名</span>
+            <strong id="fourthCount">0</strong>
+          </button>
+          <button class="medal silver" type="button" data-rank="银">
+            <span>银奖</span>
+            <strong id="silverCount">0</strong>
+          </button>
+          <button class="medal gold" type="button" data-rank="金">
+            <span>金奖</span>
+            <strong id="goldCount">0</strong>
+          </button>
+          <button class="medal bronze" type="button" data-rank="铜">
+            <span>铜奖</span>
+            <strong id="bronzeCount">0</strong>
+          </button>
+          <button class="medal fifth" type="button" data-rank="第五">
+            <span>第五名</span>
+            <strong id="fifthCount">0</strong>
+          </button>
+        </section>
+
+        <section>
+          <div class="section-heading">
+            <h2>获奖学生</h2>
+            <p>点击学生名字或卡片查看详细奖项</p>
+          </div>
+          <div class="student-grid" id="studentGrid"></div>
+        </section>
+      </section>
+
+      <section class="detail-view" id="detailView" hidden>
+        <article class="profile" id="studentProfile"></article>
+        <section class="award-list" id="awardList"></section>
+      </section>
+    </main>
+
+    <section class="modal-backdrop" id="rankModal" hidden>
+      <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="rankModalTitle">
+        <div class="rank-results-header">
+          <div>
+            <p class="eyebrow">Award Details</p>
+            <h2 id="rankModalTitle">奖项项目</h2>
+          </div>
+          <button class="ghost-button small" id="closeRankModal" type="button">关闭</button>
+        </div>
+        <div class="rank-result-list" id="rankModalBody"></div>
+      </div>
+    </section>
+
+    <script src="script.js"></script>
+  </body>
+</html>
