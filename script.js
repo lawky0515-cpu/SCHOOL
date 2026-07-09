@@ -1,4 +1,5 @@
-const googleSheetCsvUrl = "https://docs.google.com/spreadsheets/d/16SmLH_1JUQLcbUol4D5gfTyIH_ymbjHRMN1HoEFG5Ik/export?format=csv&gid=0";
+const googleSheetCsvUrl = "https://docs.google.com/spreadsheets/d/16SmLH_1JUQLcbUol4D5gfTyIH_ymbjHRMN1HoEFG5Ik/gviz/tq?tqx=out:csv&gid=0";
+const localCsvUrl = "DATA PENYERTAAN INDIVIDU (Responses) - Form Responses 1.csv";
 
 let students = [
   {
@@ -296,6 +297,7 @@ const rankModal = document.querySelector("#rankModal");
 const rankModalTitle = document.querySelector("#rankModalTitle");
 const rankModalBody = document.querySelector("#rankModalBody");
 const closeRankModal = document.querySelector("#closeRankModal");
+const dataStatus = document.querySelector("#dataStatus");
 const studentGrid = document.querySelector("#studentGrid");
 const studentProfile = document.querySelector("#studentProfile");
 const awardList = document.querySelector("#awardList");
@@ -410,12 +412,22 @@ function mapSheetLevel(value) {
 
 function rowsToStudents(rows) {
   const [headerRow, ...dataRows] = rows;
-  const headers = headerRow.map((header) => String(header || "").trim());
+  const seenHeaders = {};
+  const headers = headerRow.map((header) => {
+    const cleanHeader = String(header || "").trim();
+    seenHeaders[cleanHeader] = (seenHeaders[cleanHeader] || 0) + 1;
+
+    if (cleanHeader === "PROGRAM/PERTANDINGAN" && seenHeaders[cleanHeader] === 2) {
+      return "PROGRAM/PERTANDINGAN 2";
+    }
+
+    return seenHeaders[cleanHeader] > 1 ? `${cleanHeader} ${seenHeaders[cleanHeader]}` : cleanHeader;
+  });
   const studentMap = new Map();
 
   dataRows.forEach((row) => {
     const record = Object.fromEntries(headers.map((header, index) => [header, row[index] || ""]));
-    const name = String(record["NAMA PENUH MURID"] || record.name || "").trim();
+    const name = String(record["NAMA PENUH MURID"] || record.name || "").replace(/\s+/g, " ").trim();
     const rank = mapSheetRank(record.PENCAPAIAN || record.rank);
 
     if (!name) return;
@@ -431,8 +443,8 @@ function rowsToStudents(rows) {
 
     if (!rank) return;
 
-    const mainProgram = record["PROGRAM/PERTANDINGAN"] || "";
-    const subProgram = record["PROGRAM/PERTANDINGAN 2"] || "";
+    const mainProgram = String(record["PROGRAM/PERTANDINGAN"] || "").trim();
+    const subProgram = String(record["PROGRAM/PERTANDINGAN 2"] || "").trim();
     const title = subProgram && mainProgram ? `${mainProgram} - ${subProgram}` : subProgram || mainProgram || "PERTANDINGAN";
 
     studentMap.get(name).awards.push({
@@ -447,22 +459,41 @@ function rowsToStudents(rows) {
   return [...studentMap.values()].filter((student) => student.awards.length > 0);
 }
 
-async function loadStudentsFromGoogleSheet() {
+async function loadStudentsFromCsv(url) {
+  const divider = url.includes("?") ? "&" : "?";
+  const response = await fetch(`${url}${divider}cacheBust=${Date.now()}`, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`CSV cannot be loaded: ${url}`);
+  }
+
+  const text = await response.text();
+  return rowsToStudents(parseCsv(text));
+}
+
+async function loadStudentData() {
   try {
-    const response = await fetch(`${googleSheetCsvUrl}&cacheBust=${Date.now()}`);
-    if (!response.ok) {
-      throw new Error("Google Sheet cannot be loaded");
-    }
-
-    const text = await response.text();
-    const sheetStudents = rowsToStudents(parseCsv(text));
-
-    if (sheetStudents.length > 0) {
-      students = sheetStudents;
+    const csvStudents = await loadStudentsFromCsv(localCsvUrl);
+    if (csvStudents.length > 0) {
+      students = csvStudents;
+      dataStatus.textContent = `已读取本地 CSV 最新资料，共 ${csvStudents.length} 位学生。`;
+      return;
     }
   } catch (error) {
-    console.warn("Using local student data because Google Sheet could not be loaded.", error);
+    console.warn("Local CSV could not be loaded.", error);
   }
+
+  try {
+    const sheetStudents = await loadStudentsFromCsv(googleSheetCsvUrl);
+    if (sheetStudents.length > 0) {
+      students = sheetStudents;
+      dataStatus.textContent = `已读取 Google Sheet 最新资料，共 ${sheetStudents.length} 位学生。`;
+      return;
+    }
+  } catch (error) {
+    console.warn("Google Sheet could not be loaded.", error);
+  }
+
+  dataStatus.textContent = "无法读取 CSV 或 Google Sheet，正在使用本地备用资料。";
 }
 
 function countAwardsByRank() {
@@ -556,6 +587,14 @@ function getLevelLabel(level) {
   return levelLabels[level] || level;
 }
 
+function getAwardLevelLabel(award) {
+  if (award.title.includes("BOLA KERANJANG")) {
+    return "县级 / Bahagian";
+  }
+
+  return getLevelLabel(award.level);
+}
+
 function getAwardsByRank(rank) {
   return students.flatMap((student) =>
     student.awards
@@ -581,7 +620,7 @@ function renderRankResults(rank) {
               <span class="rank-badge ${rankInfo.className}">${rankInfo.label}</span>
               <div>
                 <p class="award-name">${award.title}</p>
-                <p class="award-meta">${award.studentName} · ${award.className} · ${getLevelLabel(award.level)}${award.category ? ` · ${award.category}` : ""}</p>
+                <p class="award-meta">${award.studentName} · ${award.className} · ${getAwardLevelLabel(award)}${award.category ? ` · ${award.category}` : ""}</p>
               </div>
               <span class="award-year">${award.year}</span>
             </article>
@@ -618,7 +657,7 @@ function renderStudentDetail(student) {
                   <span class="rank-badge ${rankMap[award.rank].className}">${rankMap[award.rank].label}</span>
                   <div>
                     <p class="award-name">${award.title}</p>
-                    <p class="award-meta">${getLevelLabel(award.level)} 赛事${award.category ? ` · ${award.category}` : ""}</p>
+                    <p class="award-meta">${getAwardLevelLabel(award)} 赛事${award.category ? ` · ${award.category}` : ""}</p>
                   </div>
                   <span class="award-year">${award.year}</span>
                 </div>
@@ -675,7 +714,7 @@ rankModal.addEventListener("click", (event) => {
 backButton.addEventListener("click", showHome);
 
 async function initPage() {
-  await loadStudentsFromGoogleSheet();
+  await loadStudentData();
   normalizeAwardLevels();
   students.sort((a, b) => a.name.localeCompare(b.name, "en"));
   countAwardsByRank();
