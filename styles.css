@@ -34,8 +34,14 @@ body::-webkit-scrollbar {
 
 body {
   margin: 0;
-  background: var(--bg);
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+    url("assets/page-background.jpg") center / cover fixed;
   color: var(--text);
+}
+
+body.modal-open {
+  overflow: hidden;
 }
 
 [hidden] {
@@ -53,8 +59,38 @@ body {
 }
 
 .title-block {
+  position: relative;
   grid-column: 2;
+  overflow: hidden;
   text-align: center;
+}
+
+.title-block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 34%;
+  transform: translateX(-140%) skewX(-18deg);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.34),
+    transparent
+  );
+  animation: titleLightSweep 3.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes titleLightSweep {
+  0%,
+  25% {
+    transform: translateX(-140%) skewX(-18deg);
+  }
+
+  75%,
+  100% {
+    transform: translateX(340%) skewX(-18deg);
+  }
 }
 
 .title-image {
@@ -104,6 +140,113 @@ h1 {
 main {
   width: min(1160px, calc(100% - 32px));
   margin: 28px auto 56px;
+}
+
+.site-footer {
+  padding: 22px 16px;
+  background: #05070d;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+.data-status {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.grade-filter {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: clamp(2px, 1vw, 12px);
+  margin: 0 0 28px;
+  width: 100%;
+}
+
+.grade-button {
+  position: relative;
+  flex: 0 1 calc((100% - 72px) / 7);
+  display: inline-grid;
+  place-items: center;
+  width: clamp(42px, 13vw, 178px);
+  max-width: 178px;
+  aspect-ratio: 1.56;
+  border: 0;
+  background: transparent;
+  color: #0b1d39;
+  padding: 0;
+  font: inherit;
+  font-size: clamp(14px, 1.6vw, 20px);
+  font-weight: 800;
+  cursor: pointer;
+  transition: filter 160ms ease, transform 160ms ease;
+}
+
+.grade-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--grade-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  pointer-events: none;
+}
+
+.grade-button:hover,
+.grade-button:focus-visible {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+  outline: none;
+}
+
+.grade-button.active {
+  color: #0f3f8f;
+  filter: drop-shadow(0 8px 14px rgba(235, 181, 52, 0.35)) brightness(1.08);
+}
+
+.level-filter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: -10px 0 28px;
+}
+
+.level-button {
+  border: 1px solid rgba(255, 210, 92, 0.5);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.78);
+  color: #f6e7b0;
+  padding: 9px 15px;
+  font: inherit;
+  font-size: clamp(12px, 1.3vw, 15px);
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.level-button:hover,
+.level-button:focus-visible {
+  transform: translateY(-1px);
+  border-color: #f3b51b;
+  outline: none;
+}
+
+.level-button.active {
+  border-color: #f3b51b;
+  background: linear-gradient(135deg, #f3b51b, #fff0a8, #c78a16);
+  color: #071327;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
 }
 
 .summary {
@@ -236,6 +379,14 @@ main {
   display: grid;
   max-height: min(62vh, 620px);
   overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.rank-result-list::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .rank-result-item {
@@ -256,6 +407,12 @@ main {
   padding: 18px;
   color: var(--muted);
   font-weight: 700;
+}
+
+.student-grid > .empty-state {
+  grid-column: 1 / -1;
+  color: rgba(255, 255, 255, 0.78);
+  text-align: center;
 }
 
 .modal-backdrop {
@@ -299,9 +456,9 @@ main {
   align-items: center;
   min-height: 158px;
   padding: 16px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 8px;
-  background: var(--panel);
+  background: rgba(0, 0, 0, 0.8);
   cursor: pointer;
   text-align: left;
   transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
@@ -321,15 +478,16 @@ main {
   place-items: center;
   width: 112px;
   height: 112px;
+  justify-self: center;
   flex: 0 0 auto;
 }
 
 .avatar-window {
   display: inline-grid;
   place-items: center;
-  width: 74%;
-  height: 74%;
-  margin-top: -10%;
+  width: 82%;
+  height: 82%;
+  margin-top: -9%;
   overflow: hidden;
   border-radius: 50%;
   background: var(--primary-soft);
@@ -345,6 +503,7 @@ main {
   border-radius: 50%;
   object-fit: cover;
   object-position: center;
+  transform: scale(1.08);
   background: var(--primary-soft);
 }
 
@@ -360,13 +519,14 @@ main {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  object-position: center;
   pointer-events: none;
 }
 
 .student-name {
   display: block;
   margin: 0 0 3px;
-  color: var(--primary);
+  color: #ffffff;
   font-size: 17px;
   font-weight: 800;
   line-height: 1.16;
@@ -380,7 +540,7 @@ main {
 .medal-summary,
 .award-total {
   margin: 0;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 14px;
 }
 
@@ -389,7 +549,7 @@ main {
   flex-wrap: wrap;
   gap: 4px 7px;
   margin-top: 4px;
-  color: var(--text);
+  color: #ffffff;
   font-size: 13px;
   font-weight: 800;
 }
@@ -439,17 +599,25 @@ main {
 .profile {
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex-direction: column;
   gap: 18px;
-  padding: 22px;
+  padding: 24px;
   margin-bottom: 20px;
   border-radius: 8px;
   background: var(--panel);
   border: 1px solid var(--line);
+  text-align: center;
+}
+
+.profile > * {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .profile .avatar-frame {
-  width: 170px;
-  height: 170px;
+  width: min(320px, 62vw);
+  height: min(320px, 62vw);
 }
 
 .profile .avatar-initials {
@@ -459,6 +627,11 @@ main {
 .profile h2 {
   margin-bottom: 8px;
   font-size: 30px;
+}
+
+.detail-back {
+  display: block;
+  margin: 0 auto 18px;
 }
 
 .level-group {
@@ -501,6 +674,8 @@ main {
 }
 
 .rank-badge {
+  position: relative;
+  overflow: hidden;
   display: inline-flex;
   justify-content: center;
   min-width: 78px;
@@ -509,6 +684,32 @@ main {
   color: #ffffff;
   font-size: 14px;
   font-weight: 800;
+}
+
+.rank-badge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 38%;
+  transform: translateX(-140%) skewX(-22deg);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.82),
+    transparent
+  );
+  animation: badgeLightSweep 1.45s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes badgeLightSweep {
+  0% {
+    transform: translateX(-140%) skewX(-22deg);
+  }
+
+  100% {
+    transform: translateX(280%) skewX(-22deg);
+  }
 }
 
 .rank-gold {
