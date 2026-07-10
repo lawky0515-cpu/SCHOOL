@@ -16,6 +16,7 @@
 
     <main>
       <section class="home-view" id="homeView">
+        <p class="data-status" id="dataStatus">正在读取 Google Sheet 资料...</p>
         <section class="summary" aria-label="获奖总数">
           <button class="medal fourth" type="button" data-rank="第四">
             <span>第四名</span>
@@ -38,21 +39,24 @@
             <strong id="fifthCount">0</strong>
           </button>
         </section>
+        <section class="grade-filter" id="gradeFilter" aria-label="年级分类"></section>
+        <section class="level-filter" id="levelFilter" aria-label="赛事级别分类"></section>
 
         <section>
-          <div class="section-heading">
-            <h2>获奖学生</h2>
-            <p>点击学生名字或卡片查看详细奖项</p>
-          </div>
           <div class="student-grid" id="studentGrid"></div>
         </section>
       </section>
 
       <section class="detail-view" id="detailView" hidden>
+        <button class="ghost-button detail-back" id="detailBackButton" type="button">返回主页</button>
         <article class="profile" id="studentProfile"></article>
         <section class="award-list" id="awardList"></section>
       </section>
     </main>
+
+    <footer class="site-footer">
+      <p>KK CH Pantu copyright</p>
+    </footer>
 
     <section class="modal-backdrop" id="rankModal" hidden>
       <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="rankModalTitle">
