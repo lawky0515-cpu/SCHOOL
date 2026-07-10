@@ -1,6 +1,10 @@
 const googleSheetCsvUrl = "https://docs.google.com/spreadsheets/d/16SmLH_1JUQLcbUol4D5gfTyIH_ymbjHRMN1HoEFG5Ik/gviz/tq?tqx=out:csv&gid=0";
 const localCsvUrl = "DATA PENYERTAAN INDIVIDU (Responses) - Form Responses 1.csv";
 
+const studentAvatars = {
+  "JENNIFER LESAI ANAK KELVIN": "assets/jennifer-lesai-anak-kelvin.png"
+};
+
 let students = [
   {
     id: "evan-ryan-lazarus-anak-warlther",
@@ -292,16 +296,22 @@ const levelLabels = {
 
 const homeView = document.querySelector("#homeView");
 const detailView = document.querySelector("#detailView");
+const topbar = document.querySelector(".topbar");
 const summary = document.querySelector(".summary");
 const rankModal = document.querySelector("#rankModal");
 const rankModalTitle = document.querySelector("#rankModalTitle");
 const rankModalBody = document.querySelector("#rankModalBody");
 const closeRankModal = document.querySelector("#closeRankModal");
 const dataStatus = document.querySelector("#dataStatus");
+const gradeFilter = document.querySelector("#gradeFilter");
+const levelFilter = document.querySelector("#levelFilter");
 const studentGrid = document.querySelector("#studentGrid");
 const studentProfile = document.querySelector("#studentProfile");
 const awardList = document.querySelector("#awardList");
 const backButton = document.querySelector("#backButton");
+const detailBackButton = document.querySelector("#detailBackButton");
+let selectedGrade = "全部";
+let selectedLevel = "全部";
 
 function normalizeAwardLevels() {
   students.forEach((student) => {
@@ -314,6 +324,15 @@ function normalizeAwardLevels() {
         award.level = "区级";
       }
     });
+  });
+}
+
+function applyStudentAvatars() {
+  students.forEach((student) => {
+    const avatar = studentAvatars[student.name];
+    if (avatar) {
+      student.avatar = avatar;
+    }
   });
 }
 
@@ -459,6 +478,20 @@ function rowsToStudents(rows) {
   return [...studentMap.values()].filter((student) => student.awards.length > 0);
 }
 
+function getLatestCsvTimestamp(rows) {
+  const [headerRow, ...dataRows] = rows;
+  const timestampIndex = headerRow.findIndex((header) => String(header || "").trim().toLowerCase() === "timestamp");
+
+  if (timestampIndex < 0) {
+    return "";
+  }
+
+  return dataRows
+    .map((row) => String(row[timestampIndex] || "").trim())
+    .filter(Boolean)
+    .at(-1) || "";
+}
+
 async function loadStudentsFromCsv(url) {
   const divider = url.includes("?") ? "&" : "?";
   const response = await fetch(`${url}${divider}cacheBust=${Date.now()}`, { cache: "no-store" });
@@ -467,15 +500,19 @@ async function loadStudentsFromCsv(url) {
   }
 
   const text = await response.text();
-  return rowsToStudents(parseCsv(text));
+  const rows = parseCsv(text);
+  return {
+    students: rowsToStudents(rows),
+    updatedAt: getLatestCsvTimestamp(rows)
+  };
 }
 
 async function loadStudentData() {
   try {
-    const csvStudents = await loadStudentsFromCsv(localCsvUrl);
-    if (csvStudents.length > 0) {
-      students = csvStudents;
-      dataStatus.textContent = `已读取本地 CSV 最新资料，共 ${csvStudents.length} 位学生。`;
+    const csvData = await loadStudentsFromCsv(localCsvUrl);
+    if (csvData.students.length > 0) {
+      students = csvData.students;
+      dataStatus.textContent = csvData.updatedAt ? `更新日期：${csvData.updatedAt}` : "已读取本地 CSV 最新资料。";
       return;
     }
   } catch (error) {
@@ -483,10 +520,10 @@ async function loadStudentData() {
   }
 
   try {
-    const sheetStudents = await loadStudentsFromCsv(googleSheetCsvUrl);
-    if (sheetStudents.length > 0) {
-      students = sheetStudents;
-      dataStatus.textContent = `已读取 Google Sheet 最新资料，共 ${sheetStudents.length} 位学生。`;
+    const sheetData = await loadStudentsFromCsv(googleSheetCsvUrl);
+    if (sheetData.students.length > 0) {
+      students = sheetData.students;
+      dataStatus.textContent = sheetData.updatedAt ? `更新日期：${sheetData.updatedAt}` : "已读取 Google Sheet 最新资料。";
       return;
     }
   } catch (error) {
@@ -499,8 +536,8 @@ async function loadStudentData() {
 function countAwardsByRank() {
   const counts = { 金: 0, 银: 0, 铜: 0, 第四: 0, 第五: 0 };
 
-  students.forEach((student) => {
-    student.awards.forEach((award) => {
+  getVisibleStudents().forEach((student) => {
+    getFilteredAwards(student).forEach((award) => {
       if (counts[award.rank] !== undefined) {
         counts[award.rank] += 1;
       }
@@ -512,26 +549,42 @@ function countAwardsByRank() {
   });
 }
 
-function getStudentAwardTotal(student) {
-  return student.awards.length;
+function getFilteredAwards(student) {
+  return student.awards.filter((award) => selectedLevel === "全部" || award.level === selectedLevel);
 }
 
-function getStudentMedalSummary(student) {
-  const counts = { 金: 0, 银: 0, 铜: 0, 第四: 0, 第五: 0 };
+function getVisibleStudents() {
+  return students.filter((student) => {
+    const gradeMatches = selectedGrade === "全部" || student.className === selectedGrade;
+    const levelMatches = selectedLevel === "全部" || getFilteredAwards(student).length > 0;
+    return gradeMatches && levelMatches;
+  });
+}
 
-  student.awards.forEach((award) => {
+function getStudentAwardTotal(student, awards = getFilteredAwards(student)) {
+  return awards.length;
+}
+
+function getStudentMedalSummary(student, awards = getFilteredAwards(student)) {
+  const counts = { 金: 0, 银: 0, 铜: 0, 第四: 0, 第五: 0 };
+  const medalItems = [
+    { rank: "金", title: "金奖", icon: "assets/trophy-1.png" },
+    { rank: "银", title: "银奖", icon: "assets/trophy-2.png" },
+    { rank: "铜", title: "铜奖", icon: "assets/trophy-3.png" },
+    { rank: "第四", title: "第四名", icon: "assets/trophy-4.png" },
+    { rank: "第五", title: "第五名", icon: "assets/trophy-5.png" }
+  ];
+
+  awards.forEach((award) => {
     if (counts[award.rank] !== undefined) {
       counts[award.rank] += 1;
     }
   });
 
-  return `
-    <span title="金奖"><img src="assets/trophy-1.png" alt="金奖" /> ${counts.金}</span>
-    <span title="银奖"><img src="assets/trophy-2.png" alt="银奖" /> ${counts.银}</span>
-    <span title="铜奖"><img src="assets/trophy-3.png" alt="铜奖" /> ${counts.铜}</span>
-    <span title="第四名"><img src="assets/trophy-4.png" alt="第四名" /> ${counts.第四}</span>
-    <span title="第五名"><img src="assets/trophy-5.png" alt="第五名" /> ${counts.第五}</span>
-  `;
+  return medalItems
+    .filter((item) => counts[item.rank] > 0)
+    .map((item) => `<span title="${item.title}"><img src="${item.icon}" alt="${item.title}" /> ${counts[item.rank]}</span>`)
+    .join("");
 }
 
 function getInitials(name) {
@@ -557,20 +610,72 @@ function getAvatarMarkup(student) {
 }
 
 function renderStudents() {
-  studentGrid.innerHTML = students
+  const visibleStudents = getVisibleStudents();
+
+  studentGrid.innerHTML = visibleStudents.length
+    ? visibleStudents
     .map(
-      (student) => `
+      (student) => {
+        const awards = getFilteredAwards(student);
+        return `
         <button class="student-card" type="button" data-student-id="${student.id}">
           ${getAvatarMarkup(student)}
           <span>
             <span class="student-name">${student.name}</span>
             <span class="class-name">${student.className}</span>
-            <span class="medal-summary">${getStudentMedalSummary(student)}</span>
-            <span class="award-total">共 ${getStudentAwardTotal(student)} 项奖项</span>
+            <span class="medal-summary">${getStudentMedalSummary(student, awards)}</span>
+            <span class="award-total">共 ${getStudentAwardTotal(student, awards)} 项奖项</span>
           </span>
         </button>
+      `;
+      }
+    )
+    .join("")
+    : `<p class="empty-state">这个分类目前没有学生奖项。</p>`;
+}
+
+function getGradeNumber(grade) {
+  const match = String(grade).match(/\d+/);
+  return match ? Number(match[0]) : 999;
+}
+
+function getGradeImage(grade) {
+  if (grade === "全部") {
+    return "assets/category-all.png";
+  }
+
+  return `assets/category-y${getGradeNumber(grade)}.png`;
+}
+
+function renderGradeFilter() {
+  const grades = [...new Set(students.map((student) => student.className).filter(Boolean))]
+    .sort((a, b) => getGradeNumber(a) - getGradeNumber(b) || a.localeCompare(b));
+  const filters = ["全部", ...grades];
+
+  gradeFilter.innerHTML = filters
+    .map(
+      (grade) => `
+        <button class="grade-button ${grade === selectedGrade ? "active" : ""}" type="button" data-grade="${grade}" aria-label="${grade}" title="${grade}" style="--grade-image: url('${getGradeImage(grade)}')"></button>
       `
     )
+    .join("");
+}
+
+function renderLevelFilter() {
+  const levels = levelOrder.filter((level) =>
+    students.some((student) => student.awards.some((award) => award.level === level))
+  );
+  const filters = ["全部", ...levels];
+
+  levelFilter.innerHTML = filters
+    .map((level) => {
+      const label = level === "全部" ? "全部级别" : getLevelLabel(level);
+      return `
+        <button class="level-button ${level === selectedLevel ? "active" : ""}" type="button" data-level="${level}">
+          ${label}
+        </button>
+      `;
+    })
     .join("");
 }
 
@@ -596,8 +701,8 @@ function getAwardLevelLabel(award) {
 }
 
 function getAwardsByRank(rank) {
-  return students.flatMap((student) =>
-    student.awards
+  return getVisibleStudents().flatMap((student) =>
+    getFilteredAwards(student)
       .filter((award) => award.rank === rank)
       .map((award) => ({
         ...award,
@@ -630,19 +735,22 @@ function renderRankResults(rank) {
     : `<p class="empty-state">目前没有${rankInfo.label}项目。</p>`;
 
   rankModal.hidden = false;
+  document.body.classList.add("modal-open");
 }
 
 function renderStudentDetail(student) {
+  const awards = getFilteredAwards(student);
+
   studentProfile.innerHTML = `
     ${getAvatarMarkup(student)}
     <div>
       <h2>${student.name}</h2>
       <p class="class-name">${student.className}</p>
-      <p class="award-total">共获得 ${getStudentAwardTotal(student)} 项奖项</p>
+      <p class="award-total">共获得 ${getStudentAwardTotal(student, awards)} 项奖项</p>
     </div>
   `;
 
-  awardList.innerHTML = groupAwardsByLevel(student.awards)
+  awardList.innerHTML = groupAwardsByLevel(awards)
     .map(
       (group) => `
         <article class="level-group">
@@ -675,6 +783,7 @@ function showDetail(studentId) {
   if (!student) return;
 
   renderStudentDetail(student);
+  topbar.hidden = true;
   homeView.hidden = true;
   detailView.hidden = false;
   backButton.hidden = false;
@@ -682,6 +791,7 @@ function showDetail(studentId) {
 }
 
 function showHome() {
+  topbar.hidden = false;
   homeView.hidden = false;
   detailView.hidden = true;
   backButton.hidden = true;
@@ -701,23 +811,49 @@ summary.addEventListener("click", (event) => {
   }
 });
 
+gradeFilter.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-grade]");
+  if (!button) return;
+
+  selectedGrade = button.dataset.grade;
+  renderGradeFilter();
+  countAwardsByRank();
+  renderStudents();
+});
+
+levelFilter.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-level]");
+  if (!button) return;
+
+  selectedLevel = button.dataset.level;
+  renderLevelFilter();
+  countAwardsByRank();
+  renderStudents();
+});
+
 closeRankModal.addEventListener("click", () => {
   rankModal.hidden = true;
+  document.body.classList.remove("modal-open");
 });
 
 rankModal.addEventListener("click", (event) => {
   if (event.target === rankModal) {
     rankModal.hidden = true;
+    document.body.classList.remove("modal-open");
   }
 });
 
 backButton.addEventListener("click", showHome);
+detailBackButton.addEventListener("click", showHome);
 
 async function initPage() {
   await loadStudentData();
   normalizeAwardLevels();
+  applyStudentAvatars();
   students.sort((a, b) => a.name.localeCompare(b.name, "en"));
   countAwardsByRank();
+  renderGradeFilter();
+  renderLevelFilter();
   renderStudents();
 }
 
