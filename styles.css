@@ -216,22 +216,29 @@ main {
 
 .level-filter {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
-  gap: 8px;
+  gap: clamp(4px, 0.8vw, 10px);
   margin: -10px 0 28px;
+  width: min(100vw - 24px, 1520px);
+  margin-left: 50%;
+  transform: translateX(-50%);
 }
 
 .level-button {
+  flex: 0 1 auto;
+  min-width: max-content;
   border: 1px solid rgba(255, 210, 92, 0.5);
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.78);
   color: #f6e7b0;
-  padding: 9px 15px;
+  padding: clamp(8px, 1.2vw, 13px) clamp(7px, 1.4vw, 18px);
   font: inherit;
-  font-size: clamp(12px, 1.3vw, 15px);
+  font-size: clamp(10px, 1.35vw, 18px);
   font-weight: 800;
   cursor: pointer;
+  overflow: visible;
+  white-space: nowrap;
   transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
 }
 
@@ -247,6 +254,60 @@ main {
   background: linear-gradient(135deg, #f3b51b, #fff0a8, #c78a16);
   color: #071327;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+}
+
+.view-mode-filter {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: -14px 0 30px;
+}
+
+.view-mode-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.86);
+  padding: 10px 20px;
+  font: inherit;
+  font-size: clamp(13px, 1.4vw, 18px);
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.view-mode-button strong {
+  display: inline-grid;
+  place-items: center;
+  min-width: 34px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  padding: 3px 9px;
+  font-size: 1.05em;
+  line-height: 1.1;
+}
+
+.view-mode-button:hover,
+.view-mode-button:focus-visible {
+  transform: translateY(-1px);
+  border-color: #f3b51b;
+  outline: none;
+}
+
+.view-mode-button.active {
+  border-color: #f3b51b;
+  background: rgba(243, 181, 27, 0.24);
+  color: #ffe8a0;
+}
+
+.view-mode-button.active strong {
+  background: #f3b51b;
+  color: #071327;
 }
 
 .summary {
@@ -572,6 +633,24 @@ main {
   font-weight: 700;
 }
 
+.participation-count {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f3b51b, #fff0a8, #c78a16);
+  color: #071327;
+  padding: 6px 12px;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.rank-participation {
+  background: #1f2937;
+  color: #ffffff;
+}
+
 .ghost-button {
   grid-column: 3;
   justify-self: end;
@@ -789,6 +868,11 @@ main {
   main {
     width: min(100% - 22px, 1160px);
     margin-top: 18px;
+  }
+
+  .level-button {
+    padding: 7px 8px;
+    font-size: 9px;
   }
 
   .student-grid {
