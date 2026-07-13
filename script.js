@@ -288,7 +288,7 @@ const levelLabels = {
   校级: "校级 / Sekolah",
   区级: "区级 / Zon",
   县级: "县级 / Daerah",
-  省级: "省级 / Wilayah",
+  省级: "省级 / Bahagian",
   州级: "州级 / Negeri",
   全国级: "全国级 / Kebangsaan",
   国际级: "国际级 / Antarabangsa"
@@ -305,6 +305,7 @@ const closeRankModal = document.querySelector("#closeRankModal");
 const dataStatus = document.querySelector("#dataStatus");
 const gradeFilter = document.querySelector("#gradeFilter");
 const levelFilter = document.querySelector("#levelFilter");
+const viewModeFilter = document.querySelector("#viewModeFilter");
 const studentGrid = document.querySelector("#studentGrid");
 const studentProfile = document.querySelector("#studentProfile");
 const awardList = document.querySelector("#awardList");
@@ -312,16 +313,17 @@ const backButton = document.querySelector("#backButton");
 const detailBackButton = document.querySelector("#detailBackButton");
 let selectedGrade = "全部";
 let selectedLevel = "全部";
+let selectedViewMode = "awards";
 
 function normalizeAwardLevels() {
   students.forEach((student) => {
-    student.awards.forEach((award) => {
-      if (award.title.includes("BOLA KERANJANG")) {
-        award.level = "县级";
+    getStudentParticipations(student).forEach((item) => {
+      if (item.title.includes("BOLA KERANJANG")) {
+        item.level = "省级";
       }
 
-      if (award.title.includes("BOLA JARING") || award.title.includes("KEJOHANAN OLAHRAGA")) {
-        award.level = "区级";
+      if (item.title.includes("BOLA JARING") || item.title.includes("KEJOHANAN OLAHRAGA")) {
+        item.level = "区级";
       }
     });
   });
@@ -413,7 +415,7 @@ function mapSheetLevel(value) {
     SEKOLAH: "校级",
     ZON: "区级",
     DAERAH: "县级",
-    BAHAGIAN: "州级",
+    BAHAGIAN: "省级",
     NEGERI: "州级",
     KEBANGSAAN: "全国级",
     ANTARABANGSA: "国际级",
@@ -456,26 +458,31 @@ function rowsToStudents(rows) {
         id: slugify(name),
         name,
         className: record.KELAS || record.className || "",
+        participations: [],
         awards: []
       });
     }
-
-    if (!rank) return;
 
     const mainProgram = String(record["PROGRAM/PERTANDINGAN"] || "").trim();
     const subProgram = String(record["PROGRAM/PERTANDINGAN 2"] || "").trim();
     const title = subProgram && mainProgram ? `${mainProgram} - ${subProgram}` : subProgram || mainProgram || "PERTANDINGAN";
 
-    studentMap.get(name).awards.push({
+    const participation = {
       title,
       level: mapSheetLevel(record.PERINGKAT || record.level),
       rank,
       year: record.TAHUN || record.year || "2026",
       category: record.KATEGORI || record.category || ""
-    });
+    };
+
+    studentMap.get(name).participations.push(participation);
+
+    if (rank) {
+      studentMap.get(name).awards.push(participation);
+    }
   });
 
-  return [...studentMap.values()].filter((student) => student.awards.length > 0);
+  return [...studentMap.values()].filter((student) => getStudentParticipations(student).length > 0);
 }
 
 function getLatestCsvTimestamp(rows) {
@@ -553,12 +560,36 @@ function getFilteredAwards(student) {
   return student.awards.filter((award) => selectedLevel === "全部" || award.level === selectedLevel);
 }
 
+function getStudentParticipations(student) {
+  return student.participations || student.awards;
+}
+
+function getFilteredParticipations(student) {
+  return getStudentParticipations(student).filter((item) => selectedLevel === "全部" || item.level === selectedLevel);
+}
+
+function getCurrentStudentItems(student) {
+  return selectedViewMode === "participations" ? getFilteredParticipations(student) : getFilteredAwards(student);
+}
+
 function getVisibleStudents() {
   return students.filter((student) => {
     const gradeMatches = selectedGrade === "全部" || student.className === selectedGrade;
-    const levelMatches = selectedLevel === "全部" || getFilteredAwards(student).length > 0;
+    const levelMatches = selectedLevel === "全部" || getCurrentStudentItems(student).length > 0;
     return gradeMatches && levelMatches;
   });
+}
+
+function getStudentsMatchingGrade() {
+  return students.filter((student) => selectedGrade === "全部" || student.className === selectedGrade);
+}
+
+function getTotalAwardsForFilters() {
+  return getStudentsMatchingGrade().reduce((total, student) => total + getFilteredAwards(student).length, 0);
+}
+
+function getTotalParticipationsForFilters() {
+  return getStudentsMatchingGrade().reduce((total, student) => total + getFilteredParticipations(student).length, 0);
 }
 
 function getStudentAwardTotal(student, awards = getFilteredAwards(student)) {
@@ -585,6 +616,20 @@ function getStudentMedalSummary(student, awards = getFilteredAwards(student)) {
     .filter((item) => counts[item.rank] > 0)
     .map((item) => `<span title="${item.title}"><img src="${item.icon}" alt="${item.title}" /> ${counts[item.rank]}</span>`)
     .join("");
+}
+
+function getStudentCountSummary(student, awards, participations) {
+  if (selectedViewMode === "participations") {
+    return `
+      <span class="participation-count">Penyertaan ${participations.length}</span>
+      <span class="award-total">奖项 ${awards.length}</span>
+    `;
+  }
+
+  return `
+    <span class="medal-summary">${getStudentMedalSummary(student, awards)}</span>
+    <span class="award-total">共 ${getStudentAwardTotal(student, awards)} 项奖项</span>
+  `;
 }
 
 function getInitials(name) {
@@ -617,14 +662,14 @@ function renderStudents() {
     .map(
       (student) => {
         const awards = getFilteredAwards(student);
+        const participations = getFilteredParticipations(student);
         return `
         <button class="student-card" type="button" data-student-id="${student.id}">
           ${getAvatarMarkup(student)}
           <span>
             <span class="student-name">${student.name}</span>
             <span class="class-name">${student.className}</span>
-            <span class="medal-summary">${getStudentMedalSummary(student, awards)}</span>
-            <span class="award-total">共 ${getStudentAwardTotal(student, awards)} 项奖项</span>
+            ${getStudentCountSummary(student, awards, participations)}
           </span>
         </button>
       `;
@@ -663,7 +708,7 @@ function renderGradeFilter() {
 
 function renderLevelFilter() {
   const levels = levelOrder.filter((level) =>
-    students.some((student) => student.awards.some((award) => award.level === level))
+    students.some((student) => getStudentParticipations(student).some((item) => item.level === level))
   );
   const filters = ["全部", ...levels];
 
@@ -676,6 +721,24 @@ function renderLevelFilter() {
         </button>
       `;
     })
+    .join("");
+}
+
+function renderViewModeFilter() {
+  const modes = [
+    { id: "awards", label: "奖项数量 / Pencapaian", count: getTotalAwardsForFilters() },
+    { id: "participations", label: "Penyertaan 数量", count: getTotalParticipationsForFilters() }
+  ];
+
+  viewModeFilter.innerHTML = modes
+    .map(
+      (mode) => `
+        <button class="view-mode-button ${mode.id === selectedViewMode ? "active" : ""}" type="button" data-view-mode="${mode.id}">
+          <span>${mode.label}</span>
+          <strong>${mode.count}</strong>
+        </button>
+      `
+    )
     .join("");
 }
 
@@ -694,7 +757,7 @@ function getLevelLabel(level) {
 
 function getAwardLevelLabel(award) {
   if (award.title.includes("BOLA KERANJANG")) {
-    return "县级 / Bahagian";
+    return "省级 / Bahagian";
   }
 
   return getLevelLabel(award.level);
@@ -740,6 +803,50 @@ function renderRankResults(rank) {
 
 function renderStudentDetail(student) {
   const awards = getFilteredAwards(student);
+  const participations = getFilteredParticipations(student);
+  const detailItems = selectedViewMode === "participations" ? participations : awards;
+  const totalLabel = selectedViewMode === "participations"
+    ? `共参加 ${participations.length} 项 Penyertaan`
+    : `共获得 ${getStudentAwardTotal(student, awards)} 项奖项`;
+
+  studentProfile.innerHTML = `
+    ${getAvatarMarkup(student)}
+    <div>
+      <h2>${student.name}</h2>
+      <p class="class-name">${student.className}</p>
+      <p class="award-total">${totalLabel}</p>
+    </div>
+  `;
+
+  awardList.innerHTML = groupAwardsByLevel(detailItems)
+    .map(
+      (group) => `
+        <article class="level-group">
+          <div class="level-title">
+            <h3>${getLevelLabel(group.level)}</h3>
+            <span>${group.awards.length} 项</span>
+          </div>
+          ${group.awards
+            .map((award) => {
+              const rankInfo = rankMap[award.rank];
+              return `
+                <div class="award-item">
+                  <span class="rank-badge ${rankInfo ? rankInfo.className : "rank-participation"}">${rankInfo ? rankInfo.label : "Penyertaan"}</span>
+                  <div>
+                    <p class="award-name">${award.title}</p>
+                    <p class="award-meta">${getAwardLevelLabel(award)} 赛事${award.category ? ` · ${award.category}` : ""}</p>
+                  </div>
+                  <span class="award-year">${award.year}</span>
+                </div>
+              `;
+            })
+            .join("")}
+        </article>
+      `
+    )
+    .join("");
+
+  return;
 
   studentProfile.innerHTML = `
     ${getAvatarMarkup(student)}
@@ -818,6 +925,7 @@ gradeFilter.addEventListener("click", (event) => {
   selectedGrade = button.dataset.grade;
   renderGradeFilter();
   countAwardsByRank();
+  renderViewModeFilter();
   renderStudents();
 });
 
@@ -827,6 +935,17 @@ levelFilter.addEventListener("click", (event) => {
 
   selectedLevel = button.dataset.level;
   renderLevelFilter();
+  countAwardsByRank();
+  renderViewModeFilter();
+  renderStudents();
+});
+
+viewModeFilter.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-view-mode]");
+  if (!button) return;
+
+  selectedViewMode = button.dataset.viewMode;
+  renderViewModeFilter();
   countAwardsByRank();
   renderStudents();
 });
@@ -854,6 +973,7 @@ async function initPage() {
   countAwardsByRank();
   renderGradeFilter();
   renderLevelFilter();
+  renderViewModeFilter();
   renderStudents();
 }
 
