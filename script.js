@@ -1,297 +1,29 @@
-const googleSheetCsvUrl = "https://docs.google.com/spreadsheets/d/16SmLH_1JUQLcbUol4D5gfTyIH_ymbjHRMN1HoEFG5Ik/gviz/tq?tqx=out:csv&gid=0";
+const googleSheetCsvUrl = "https://docs.google.com/spreadsheets/d/16SmLH_1JUQLcbUol4D5gfTyIH_ymbjHRMN1HoEFG5Ik/gviz/tq?tqx=out:csv&gid=616145414";
 const localCsvUrl = "DATA PENYERTAAN INDIVIDU (Responses) - Form Responses 1.csv";
 
 const studentAvatars = {
   "JENNIFER LESAI ANAK KELVIN": "assets/jennifer-lesai-anak-kelvin.png"
 };
 
-let students = [
-  {
-    id: "evan-ryan-lazarus-anak-warlther",
-    name: "EVAN RYAN LAZARUS ANAK WARLTHER",
-    className: "TAHUN 5",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN OLAHRAGA - LOMPAT JAUH", level: "校级", rank: "金", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "khairul-ikhwan-bin-abdullah",
-    name: "KHAIRUL IKHWAN BIN ABDULLAH",
-    className: "TAHUN 5",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" },
-      { title: "TALI TEMALI BERKUMPULAN PUTERA", level: "州级", rank: "铜", year: "2026", category: "eMas" }
-    ]
-  },
-  {
-    id: "morris-lau-jia-rong",
-    name: "MORRIS LAU JIA RONG",
-    className: "TAHUN 5",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "daniel-hanniest-bin-nazry",
-    name: "DANIEL HANNIEST BIN NAZRY",
-    className: "TAHUN 5",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "alvin-cristian-nontias",
-    name: "ALVIN CRISTIAN NONTIAS",
-    className: "TAHUN 6",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN OLAHRAGA - LONTAR PELURU", level: "校级", rank: "银", year: "2026", category: "MSS" },
-      { title: "PENGUCAPAN AWAM INDIVIDU PUTERA", level: "州级", rank: "金", year: "2026", category: "eMas" }
-    ]
-  },
-  {
-    id: "phang-ju-hien",
-    name: "PHANG JU HIEN",
-    className: "TAHUN 5",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "braydernd-dickenson-anak-blury",
-    name: "BRAYDERND DICKENSON ANAK BLURY",
-    className: "TAHUN 5",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "michael-faith-anak-mola",
-    name: "MICHAEL FAITH ANAK MOLA",
-    className: "TAHUN 4",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "lester-engkamat-anak-samson",
-    name: "LESTER ENGKAMAT ANAK SAMSON",
-    className: "TAHUN 4",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "greadballe-owen-sintal-anak-miguel-lanie",
-    name: "GREADBALLE OWEN SINTAL ANAK MIGUEL LANIE",
-    className: "TAHUN 4",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN OLAHRAGA - LOMPAT JAUH", level: "校级", rank: "铜", year: "2026", category: "MSS" },
-      { title: "TALI TEMALI BERKUMPULAN PUTERA", level: "州级", rank: "铜", year: "2026", category: "eMas" }
-    ]
-  },
-  {
-    id: "kon-sen-fook",
-    name: "KON SEN FOOK",
-    className: "TAHUN 6",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "victor-loke",
-    name: "VICTOR LOKE",
-    className: "TAHUN 4",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "danisha-hii",
-    name: "DANISHA HII",
-    className: "TAHUN 6",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN BOLA JARING", level: "校级", rank: "铜", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN OLAHRAGA - LOMPAT JAUH", level: "校级", rank: "银", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "elyysia-sofia-yati-anak-mosses",
-    name: "ELYYSIA SOFIA YATI ANAK MOSSES",
-    className: "TAHUN 6",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN BOLA JARING", level: "校级", rank: "铜", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN OLAHRAGA - LOMPAT JAUH", level: "校级", rank: "银", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "christy-enzayan-bong-anak-susana-lenjai",
-    name: "CHRISTY ENZAYAN BONG ANAK SUSANA LENJAI",
-    className: "TAHUN 5",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN BOLA JARING", level: "校级", rank: "铜", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN OLAHRAGA - LOMPAT TINGGI", level: "校级", rank: "铜", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "christy-valencia-layam-anak-jerampang",
-    name: "CHRISTY VALENCIA LAYAM ANAK JERAMPANG",
-    className: "TAHUN 6",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN BOLA JARING", level: "校级", rank: "铜", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "evelyne-clarissa-anak-warlther",
-    name: "EVELYNE CLARISSA ANAK WARLTHER",
-    className: "TAHUN 6",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN BOLA JARING", level: "校级", rank: "铜", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "adriana-dazellya-anak-blury",
-    name: "ADRIANA DAZELLYA ANAK BLURY",
-    className: "TAHUN 6",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN BOLA JARING", level: "校级", rank: "铜", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "lannievanessa-anak-lanyau",
-    name: "LANNIEVANESSA ANAK LANYAU",
-    className: "TAHUN 5",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN BOLA JARING", level: "校级", rank: "铜", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN OLAHRAGA - LONTAR PELURU", level: "校级", rank: "铜", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN OLAHRAGA - LARIAN 100M", level: "校级", rank: "金", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "asha-nathania-piah-anak-allister",
-    name: "ASHA NATHANIA PIAH ANAK ALLISTER",
-    className: "TAHUN 4",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "luxxiana-orlee-lunar-anak-jerry",
-    name: "LUXXIANA ORLEE LUNAR ANAK JERRY",
-    className: "TAHUN 4",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "kyraalexia-nawah-anak-donny",
-    name: "KYRAALEXIA NAWAH ANAK DONNY",
-    className: "TAHUN 4",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN BOLA JARING", level: "校级", rank: "铜", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN OLAHRAGA - LARIAN 200M", level: "校级", rank: "金", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "clara-isabel-ng",
-    name: "CLARA ISABEL NG",
-    className: "TAHUN 4",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN BOLA JARING", level: "校级", rank: "铜", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN OLAHRAGA - LOMPAT TINGGI", level: "校级", rank: "金", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN OLAHRAGA - LOMPAT TINGGI", level: "州级", rank: "银", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "pretty-anak-john-lee",
-    name: "PRETTY ANAK JOHN LEE",
-    className: "TAHUN 4",
-    awards: [
-      { title: "KEJOHANAN BOLA KERANJANG", level: "州级", rank: "第四", year: "2026", category: "MSS" },
-      { title: "KEJOHANAN OLAHRAGA - LONTAR PELURU", level: "校级", rank: "银", year: "2026", category: "MSS" }
-    ]
-  },
-  {
-    id: "aeries-tiong-xin-ning",
-    name: "AERIES TIONG XIN NING",
-    className: "TAHUN 6",
-    awards: [
-      { title: "PERTANDINGAN PENULISAN KREATIF BC SR (PROSA)", level: "县级", rank: "金", year: "2026", category: "eMas" },
-      { title: "PERTANDINGAN PENULISAN KREATIF BC SR (SAJAK)", level: "县级", rank: "铜", year: "2026", category: "eMas" },
-      { title: "PERTADINGAN DEKLAMASI SAJAK BC SR TAHAP 2", level: "县级", rank: "第五", year: "2026", category: "eMas" }
-    ]
-  },
-  {
-    id: "muhammad-aiman-hakim-bin-adam-mukhriz",
-    name: "MUHAMMAD AIMAN HAKIM BIN ADAM MUKHRIZ",
-    className: "TAHUN 5",
-    awards: [
-      { title: "TALI TEMALI BERKUMPULAN PUTERA", level: "州级", rank: "铜", year: "2026", category: "eMas" }
-    ]
-  },
-  {
-    id: "jennifer-lesai-anak-kelvin",
-    name: "JENNIFER LESAI ANAK KELVIN",
-    className: "TAHUN 3",
-    awards: [
-      { title: "PERTADINGAN DEKLAMASI SAJAK BC SR TAHAP 1", level: "县级", rank: "铜", year: "2026", category: "eMas" }
-    ]
-  },
-  {
-    id: "giann-lee-zhi-en",
-    name: "GIANN LEE ZHI EN",
-    className: "TAHUN 2",
-    awards: [
-      { title: "PERTADINGAN DEKLAMASI SAJAK BC SR TAHAP 1", level: "县级", rank: "铜", year: "2026", category: "eMas" }
-    ]
-  },
-  {
-    id: "vellentino-akim-anak-merilia",
-    name: "VELLENTINO AKIM ANAK MERILIA",
-    className: "TAHUN 3",
-    awards: [
-      { title: "PERTADINGAN DEKLAMASI SAJAK BC SR TAHAP 1", level: "县级", rank: "铜", year: "2026", category: "eMas" }
-    ]
-  },
-  {
-    id: "dalisa-anak-dawi-martin",
-    name: "DALISA ANAK DAWI MARTIN",
-    className: "TAHUN 1",
-    awards: [
-      { title: "PERTADINGAN DEKLAMASI SAJAK BC SR TAHAP 1", level: "县级", rank: "金", year: "2026", category: "eMas" }
-    ]
-  }
-];
+let students = [];
 
 const rankMap = {
-  金: { countId: "goldCount", label: "金奖", className: "rank-gold" },
-  银: { countId: "silverCount", label: "银奖", className: "rank-silver" },
-  铜: { countId: "bronzeCount", label: "铜奖", className: "rank-bronze" },
-  第四: { countId: "fourthCount", label: "第四名", className: "rank-fourth" },
-  第五: { countId: "fifthCount", label: "第五名", className: "rank-fifth" }
+  "金": { countId: "goldCount", label: "金奖", className: "rank-gold" },
+  "银": { countId: "silverCount", label: "银奖", className: "rank-silver" },
+  "铜": { countId: "bronzeCount", label: "铜奖", className: "rank-bronze" },
+  "第四": { countId: "fourthCount", label: "第四名", className: "rank-fourth" },
+  "第五": { countId: "fifthCount", label: "第五名", className: "rank-fifth" }
 };
 
 const levelOrder = ["校级", "区级", "县级", "省级", "州级", "全国级", "国际级"];
-
 const levelLabels = {
-  校级: "校级 / Sekolah",
-  区级: "区级 / Zon",
-  县级: "县级 / Daerah",
-  省级: "省级 / Bahagian",
-  州级: "州级 / Negeri",
-  全国级: "全国级 / Kebangsaan",
-  国际级: "国际级 / Antarabangsa"
+  "校级": "校级 / Sekolah",
+  "区级": "区级 / Zon",
+  "县级": "县级 / Daerah",
+  "省级": "省级 / Bahagian",
+  "州级": "州级 / Negeri",
+  "全国级": "全国级 / Kebangsaan",
+  "国际级": "国际级 / Antarabangsa"
 };
 
 const homeView = document.querySelector("#homeView");
@@ -311,32 +43,10 @@ const studentProfile = document.querySelector("#studentProfile");
 const awardList = document.querySelector("#awardList");
 const backButton = document.querySelector("#backButton");
 const detailBackButton = document.querySelector("#detailBackButton");
+
 let selectedGrade = "全部";
 let selectedLevel = "全部";
 let selectedViewMode = "awards";
-
-function normalizeAwardLevels() {
-  students.forEach((student) => {
-    getStudentParticipations(student).forEach((item) => {
-      if (item.title.includes("BOLA KERANJANG")) {
-        item.level = "省级";
-      }
-
-      if (item.title.includes("BOLA JARING") || item.title.includes("KEJOHANAN OLAHRAGA")) {
-        item.level = "区级";
-      }
-    });
-  });
-}
-
-function applyStudentAvatars() {
-  students.forEach((student) => {
-    const avatar = studentAvatars[student.name];
-    if (avatar) {
-      student.avatar = avatar;
-    }
-  });
-}
 
 function parseCsv(text) {
   const rows = [];
@@ -354,16 +64,12 @@ function parseCsv(text) {
     } else if (char === '"') {
       insideQuotes = !insideQuotes;
     } else if (char === "," && !insideQuotes) {
-      row.push(cell);
+      row.push(cell.trim());
       cell = "";
     } else if ((char === "\n" || char === "\r") && !insideQuotes) {
-      if (char === "\r" && next === "\n") {
-        i += 1;
-      }
-      row.push(cell);
-      if (row.some((value) => value.trim() !== "")) {
-        rows.push(row);
-      }
+      if (char === "\r" && next === "\n") i += 1;
+      row.push(cell.trim());
+      if (row.some(Boolean)) rows.push(row);
       row = [];
       cell = "";
     } else {
@@ -371,19 +77,16 @@ function parseCsv(text) {
     }
   }
 
-  row.push(cell);
-  if (row.some((value) => value.trim() !== "")) {
-    rows.push(row);
-  }
-
+  row.push(cell.trim());
+  if (row.some(Boolean)) rows.push(row);
   return rows;
 }
 
 function slugify(text) {
-  return text
+  return String(text)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
+    .replace(/^-+|-+$/g, "");
 }
 
 function mapSheetRank(value) {
@@ -412,45 +115,45 @@ function mapSheetRank(value) {
 function mapSheetLevel(value) {
   const normalized = String(value || "").trim().toUpperCase();
   const levels = {
-    SEKOLAH: "校级",
-    ZON: "区级",
-    DAERAH: "县级",
-    BAHAGIAN: "省级",
-    NEGERI: "州级",
-    KEBANGSAAN: "全国级",
-    ANTARABANGSA: "国际级",
-    校级: "校级",
-    区级: "区级",
-    县级: "县级",
-    省级: "省级",
-    州级: "州级",
-    全国级: "全国级",
-    国际级: "国际级"
+    "SEKOLAH": "校级",
+    "ZON": "区级",
+    "DAERAH": "县级",
+    "BAHAGIAN": "省级",
+    "WILAYAH": "省级",
+    "NEGERI": "州级",
+    "KEBANGSAAN": "全国级",
+    "ANTARABANGSA": "国际级",
+    "校级": "校级",
+    "区级": "区级",
+    "县级": "县级",
+    "省级": "省级",
+    "州级": "州级",
+    "全国级": "全国级",
+    "国际级": "国际级"
   };
 
-  return levels[normalized] || value || "";
+  return levels[normalized] || "校级";
 }
 
 function rowsToStudents(rows) {
   const [headerRow, ...dataRows] = rows;
+  if (!headerRow) return [];
+
   const seenHeaders = {};
   const headers = headerRow.map((header) => {
     const cleanHeader = String(header || "").trim();
     seenHeaders[cleanHeader] = (seenHeaders[cleanHeader] || 0) + 1;
-
     if (cleanHeader === "PROGRAM/PERTANDINGAN" && seenHeaders[cleanHeader] === 2) {
       return "PROGRAM/PERTANDINGAN 2";
     }
-
     return seenHeaders[cleanHeader] > 1 ? `${cleanHeader} ${seenHeaders[cleanHeader]}` : cleanHeader;
   });
+
   const studentMap = new Map();
 
   dataRows.forEach((row) => {
     const record = Object.fromEntries(headers.map((header, index) => [header, row[index] || ""]));
     const name = String(record["NAMA PENUH MURID"] || record.name || "").replace(/\s+/g, " ").trim();
-    const rank = mapSheetRank(record.PENCAPAIAN || record.rank);
-
     if (!name) return;
 
     if (!studentMap.has(name)) {
@@ -461,12 +164,14 @@ function rowsToStudents(rows) {
         participations: [],
         awards: []
       });
+    } else if (record.KELAS || record.className) {
+      studentMap.get(name).className = record.KELAS || record.className;
     }
 
     const mainProgram = String(record["PROGRAM/PERTANDINGAN"] || "").trim();
     const subProgram = String(record["PROGRAM/PERTANDINGAN 2"] || "").trim();
     const title = subProgram && mainProgram ? `${mainProgram} - ${subProgram}` : subProgram || mainProgram || "PERTANDINGAN";
-
+    const rank = mapSheetRank(record.PENCAPAIAN || record.rank);
     const participation = {
       title,
       level: mapSheetLevel(record.PERINGKAT || record.level),
@@ -476,10 +181,7 @@ function rowsToStudents(rows) {
     };
 
     studentMap.get(name).participations.push(participation);
-
-    if (rank) {
-      studentMap.get(name).awards.push(participation);
-    }
+    if (rank) studentMap.get(name).awards.push(participation);
   });
 
   return [...studentMap.values()].filter((student) => getStudentParticipations(student).length > 0);
@@ -487,11 +189,8 @@ function rowsToStudents(rows) {
 
 function getLatestCsvTimestamp(rows) {
   const [headerRow, ...dataRows] = rows;
-  const timestampIndex = headerRow.findIndex((header) => String(header || "").trim().toLowerCase() === "timestamp");
-
-  if (timestampIndex < 0) {
-    return "";
-  }
+  const timestampIndex = headerRow?.findIndex((header) => String(header || "").trim().toLowerCase() === "timestamp") ?? -1;
+  if (timestampIndex < 0) return "";
 
   return dataRows
     .map((row) => String(row[timestampIndex] || "").trim())
@@ -501,13 +200,9 @@ function getLatestCsvTimestamp(rows) {
 
 async function loadStudentsFromCsv(url) {
   const divider = url.includes("?") ? "&" : "?";
-  const response = await fetch(`${url}${divider}cacheBust=${Date.now()}`, { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`CSV cannot be loaded: ${url}`);
-  }
-
-  const text = await response.text();
-  const rows = parseCsv(text);
+  const response = await fetch(`${url}${divider}v=${Date.now()}`);
+  if (!response.ok) throw new Error(`Unable to load ${url}`);
+  const rows = parseCsv(await response.text());
   return {
     students: rowsToStudents(rows),
     updatedAt: getLatestCsvTimestamp(rows)
@@ -515,17 +210,6 @@ async function loadStudentsFromCsv(url) {
 }
 
 async function loadStudentData() {
-  try {
-    const csvData = await loadStudentsFromCsv(localCsvUrl);
-    if (csvData.students.length > 0) {
-      students = csvData.students;
-      dataStatus.textContent = csvData.updatedAt ? `更新日期：${csvData.updatedAt}` : "已读取本地 CSV 最新资料。";
-      return;
-    }
-  } catch (error) {
-    console.warn("Local CSV could not be loaded.", error);
-  }
-
   try {
     const sheetData = await loadStudentsFromCsv(googleSheetCsvUrl);
     if (sheetData.students.length > 0) {
@@ -537,31 +221,42 @@ async function loadStudentData() {
     console.warn("Google Sheet could not be loaded.", error);
   }
 
-  dataStatus.textContent = "无法读取 CSV 或 Google Sheet，正在使用本地备用资料。";
+  try {
+    const csvData = await loadStudentsFromCsv(localCsvUrl);
+    if (csvData.students.length > 0) {
+      students = csvData.students;
+      dataStatus.textContent = csvData.updatedAt ? `更新日期：${csvData.updatedAt}` : "已读取本地 CSV 最新资料。";
+      return;
+    }
+  } catch (error) {
+    console.warn("Local CSV could not be loaded.", error);
+  }
+
+  dataStatus.textContent = "无法读取 Google Sheet 或 CSV，请检查资料文件。";
 }
 
-function countAwardsByRank() {
-  const counts = { 金: 0, 银: 0, 铜: 0, 第四: 0, 第五: 0 };
+function getStudentParticipations(student) {
+  return student.participations || student.awards || [];
+}
 
-  getVisibleStudents().forEach((student) => {
-    getFilteredAwards(student).forEach((award) => {
-      if (counts[award.rank] !== undefined) {
-        counts[award.rank] += 1;
-      }
+function normalizeAwardLevels() {
+  students.forEach((student) => {
+    getStudentParticipations(student).forEach((item) => {
+      if (item.title.includes("BOLA KERANJANG")) item.level = "省级";
+      if (item.title.includes("BOLA JARING") || item.title.includes("KEJOHANAN OLAHRAGA")) item.level = "区级";
     });
   });
+}
 
-  Object.entries(counts).forEach(([rank, count]) => {
-    document.querySelector(`#${rankMap[rank].countId}`).textContent = count;
+function applyStudentAvatars() {
+  students.forEach((student) => {
+    const avatar = studentAvatars[student.name];
+    if (avatar) student.avatar = avatar;
   });
 }
 
 function getFilteredAwards(student) {
   return student.awards.filter((award) => selectedLevel === "全部" || award.level === selectedLevel);
-}
-
-function getStudentParticipations(student) {
-  return student.participations || student.awards;
 }
 
 function getFilteredParticipations(student) {
@@ -592,12 +287,26 @@ function getTotalParticipationsForFilters() {
   return getStudentsMatchingGrade().reduce((total, student) => total + getFilteredParticipations(student).length, 0);
 }
 
+function countAwardsByRank() {
+  const counts = { "金": 0, "银": 0, "铜": 0, "第四": 0, "第五": 0 };
+
+  getVisibleStudents().forEach((student) => {
+    getFilteredAwards(student).forEach((award) => {
+      if (counts[award.rank] !== undefined) counts[award.rank] += 1;
+    });
+  });
+
+  Object.entries(counts).forEach(([rank, count]) => {
+    document.querySelector(`#${rankMap[rank].countId}`).textContent = count;
+  });
+}
+
 function getStudentAwardTotal(student, awards = getFilteredAwards(student)) {
   return awards.length;
 }
 
 function getStudentMedalSummary(student, awards = getFilteredAwards(student)) {
-  const counts = { 金: 0, 银: 0, 铜: 0, 第四: 0, 第五: 0 };
+  const counts = { "金": 0, "银": 0, "铜": 0, "第四": 0, "第五": 0 };
   const medalItems = [
     { rank: "金", title: "金奖", icon: "assets/trophy-1.png" },
     { rank: "银", title: "银奖", icon: "assets/trophy-2.png" },
@@ -607,29 +316,13 @@ function getStudentMedalSummary(student, awards = getFilteredAwards(student)) {
   ];
 
   awards.forEach((award) => {
-    if (counts[award.rank] !== undefined) {
-      counts[award.rank] += 1;
-    }
+    if (counts[award.rank] !== undefined) counts[award.rank] += 1;
   });
 
   return medalItems
     .filter((item) => counts[item.rank] > 0)
     .map((item) => `<span title="${item.title}"><img src="${item.icon}" alt="${item.title}" /> ${counts[item.rank]}</span>`)
     .join("");
-}
-
-function getStudentCountSummary(student, awards, participations) {
-  if (selectedViewMode === "participations") {
-    return `
-      <span class="participation-count">Penyertaan ${participations.length}</span>
-      <span class="award-total">奖项 ${awards.length}</span>
-    `;
-  }
-
-  return `
-    <span class="medal-summary">${getStudentMedalSummary(student, awards)}</span>
-    <span class="award-total">共 ${getStudentAwardTotal(student, awards)} 项奖项</span>
-  `;
 }
 
 function getInitials(name) {
@@ -654,29 +347,41 @@ function getAvatarMarkup(student) {
   `;
 }
 
+function getStudentCountSummary(student, awards, participations) {
+  if (selectedViewMode === "participations") {
+    return `
+      <span class="participation-count">Penyertaan ${participations.length}</span>
+      <span class="award-total">奖项 ${awards.length}</span>
+    `;
+  }
+
+  return `
+    <span class="medal-summary">${getStudentMedalSummary(student, awards)}</span>
+    <span class="award-total">共 ${getStudentAwardTotal(student, awards)} 项奖项</span>
+  `;
+}
+
 function renderStudents() {
   const visibleStudents = getVisibleStudents();
 
   studentGrid.innerHTML = visibleStudents.length
     ? visibleStudents
-    .map(
-      (student) => {
-        const awards = getFilteredAwards(student);
-        const participations = getFilteredParticipations(student);
-        return `
-        <button class="student-card" type="button" data-student-id="${student.id}">
-          ${getAvatarMarkup(student)}
-          <span>
-            <span class="student-name">${student.name}</span>
-            <span class="class-name">${student.className}</span>
-            ${getStudentCountSummary(student, awards, participations)}
-          </span>
-        </button>
-      `;
-      }
-    )
-    .join("")
-    : `<p class="empty-state">这个分类目前没有学生奖项。</p>`;
+        .map((student) => {
+          const awards = getFilteredAwards(student);
+          const participations = getFilteredParticipations(student);
+          return `
+            <button class="student-card" type="button" data-student-id="${student.id}">
+              ${getAvatarMarkup(student)}
+              <span>
+                <span class="student-name">${student.name}</span>
+                <span class="class-name">${student.className}</span>
+                ${getStudentCountSummary(student, awards, participations)}
+              </span>
+            </button>
+          `;
+        })
+        .join("")
+    : `<p class="empty-state">这个分类目前没有学生资料。</p>`;
 }
 
 function getGradeNumber(grade) {
@@ -685,10 +390,7 @@ function getGradeNumber(grade) {
 }
 
 function getGradeImage(grade) {
-  if (grade === "全部") {
-    return "assets/category-all.png";
-  }
-
+  if (grade === "全部") return "assets/category-all.png";
   return `assets/category-y${getGradeNumber(grade)}.png`;
 }
 
@@ -714,10 +416,11 @@ function renderLevelFilter() {
 
   levelFilter.innerHTML = filters
     .map((level) => {
-      const label = level === "全部" ? "全部级别" : getLevelLabel(level);
+      const label = getLevelParts(level);
       return `
-        <button class="level-button ${level === selectedLevel ? "active" : ""}" type="button" data-level="${level}">
-          ${label}
+        <button class="level-button ${level === selectedLevel ? "active" : ""}" type="button" data-level="${level}" aria-label="${label.zh} / ${label.ms}">
+          <span class="level-zh">${label.zh}</span>
+          <span class="level-ms">${label.ms}</span>
         </button>
       `;
     })
@@ -726,15 +429,15 @@ function renderLevelFilter() {
 
 function renderViewModeFilter() {
   const modes = [
-    { id: "awards", label: "奖项数量 / Pencapaian", count: getTotalAwardsForFilters() },
-    { id: "participations", label: "Penyertaan 数量", count: getTotalParticipationsForFilters() }
+    { id: "awards", zh: "奖项数量", ms: "Pencapaian", count: getTotalAwardsForFilters() },
+    { id: "participations", zh: "Penyertaan", ms: "数量", count: getTotalParticipationsForFilters() }
   ];
 
   viewModeFilter.innerHTML = modes
     .map(
       (mode) => `
         <button class="view-mode-button ${mode.id === selectedViewMode ? "active" : ""}" type="button" data-view-mode="${mode.id}">
-          <span>${mode.label}</span>
+          <span class="view-mode-text"><span class="view-mode-zh">${mode.zh}</span><span class="view-mode-ms">${mode.ms}</span></span>
           <strong>${mode.count}</strong>
         </button>
       `
@@ -742,24 +445,30 @@ function renderViewModeFilter() {
     .join("");
 }
 
-function groupAwardsByLevel(awards) {
+function groupItemsByLevel(items) {
   return levelOrder
     .map((level) => ({
       level,
-      awards: awards.filter((award) => award.level === level)
+      items: items.filter((item) => item.level === level)
     }))
-    .filter((group) => group.awards.length > 0);
+    .filter((group) => group.items.length > 0);
 }
 
 function getLevelLabel(level) {
   return levelLabels[level] || level;
 }
 
-function getAwardLevelLabel(award) {
-  if (award.title.includes("BOLA KERANJANG")) {
-    return "省级 / Bahagian";
+function getLevelParts(level) {
+  if (level === "全部") {
+    return { zh: "全部", ms: "Semua" };
   }
 
+  const [zh, ms] = getLevelLabel(level).split(" / ");
+  return { zh: zh || level, ms: ms || "" };
+}
+
+function getAwardLevelLabel(award) {
+  if (award.title.includes("BOLA KERANJANG")) return "省级 / Bahagian";
   return getLevelLabel(award.level);
 }
 
@@ -811,22 +520,22 @@ function renderStudentDetail(student) {
 
   studentProfile.innerHTML = `
     ${getAvatarMarkup(student)}
-    <div>
+    <div class="student-profile-text">
       <h2>${student.name}</h2>
       <p class="class-name">${student.className}</p>
       <p class="award-total">${totalLabel}</p>
     </div>
   `;
 
-  awardList.innerHTML = groupAwardsByLevel(detailItems)
+  awardList.innerHTML = groupItemsByLevel(detailItems)
     .map(
       (group) => `
         <article class="level-group">
           <div class="level-title">
             <h3>${getLevelLabel(group.level)}</h3>
-            <span>${group.awards.length} 项</span>
+            <span>${group.items.length} 项</span>
           </div>
-          ${group.awards
+          ${group.items
             .map((award) => {
               const rankInfo = rankMap[award.rank];
               return `
@@ -840,44 +549,6 @@ function renderStudentDetail(student) {
                 </div>
               `;
             })
-            .join("")}
-        </article>
-      `
-    )
-    .join("");
-
-  return;
-
-  studentProfile.innerHTML = `
-    ${getAvatarMarkup(student)}
-    <div>
-      <h2>${student.name}</h2>
-      <p class="class-name">${student.className}</p>
-      <p class="award-total">共获得 ${getStudentAwardTotal(student, awards)} 项奖项</p>
-    </div>
-  `;
-
-  awardList.innerHTML = groupAwardsByLevel(awards)
-    .map(
-      (group) => `
-        <article class="level-group">
-          <div class="level-title">
-            <h3>${getLevelLabel(group.level)}</h3>
-            <span>${group.awards.length} 项</span>
-          </div>
-          ${group.awards
-            .map(
-              (award) => `
-                <div class="award-item">
-                  <span class="rank-badge ${rankMap[award.rank].className}">${rankMap[award.rank].label}</span>
-                  <div>
-                    <p class="award-name">${award.title}</p>
-                    <p class="award-meta">${getAwardLevelLabel(award)} 赛事${award.category ? ` · ${award.category}` : ""}</p>
-                  </div>
-                  <span class="award-year">${award.year}</span>
-                </div>
-              `
-            )
             .join("")}
         </article>
       `
@@ -906,16 +577,12 @@ function showHome() {
 
 studentGrid.addEventListener("click", (event) => {
   const card = event.target.closest("[data-student-id]");
-  if (card) {
-    showDetail(card.dataset.studentId);
-  }
+  if (card) showDetail(card.dataset.studentId);
 });
 
 summary.addEventListener("click", (event) => {
   const medal = event.target.closest("[data-rank]");
-  if (medal) {
-    renderRankResults(medal.dataset.rank);
-  }
+  if (medal) renderRankResults(medal.dataset.rank);
 });
 
 gradeFilter.addEventListener("click", (event) => {
@@ -978,3 +645,5 @@ async function initPage() {
 }
 
 initPage();
+
+
